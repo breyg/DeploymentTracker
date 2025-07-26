@@ -1,0 +1,6 @@
+@GP.ADQ.DeploymentTracker.API_HostAddress = http://localhost:5239
+
+GET {{GP.ADQ.DeploymentTracker.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
