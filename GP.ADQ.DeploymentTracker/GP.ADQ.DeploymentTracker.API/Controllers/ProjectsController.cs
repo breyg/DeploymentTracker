@@ -2,7 +2,7 @@
 using GP.ADQ.DeploymentTracker.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GP.ADQ.DeploymentTracker.API
+namespace GP.ADQ.DeploymentTracker.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -65,14 +65,11 @@ namespace GP.ADQ.DeploymentTracker.API
         [HttpPost]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ProjectDto>> CreateProject(CreateProjectDto createDto)
+        public async Task<ActionResult<ProjectDto>> CreateProject([FromBody] CreateProjectDto request)
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                var project = await _projectService.CreateProjectAsync(createDto);
+                var project = await _projectService.CreateProjectAsync(request);
                 return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             }
             catch (InvalidOperationException ex)
@@ -87,20 +84,16 @@ namespace GP.ADQ.DeploymentTracker.API
         }
 
         /// <summary>
-        /// Update an existing project
+        /// Update a project
         /// </summary>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProjectDto>> UpdateProject(int id, UpdateProjectDto updateDto)
+        public async Task<ActionResult<ProjectDto>> UpdateProject(int id, [FromBody] UpdateProjectDto request)
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                var project = await _projectService.UpdateProjectAsync(id, updateDto);
+                var project = await _projectService.UpdateProjectAsync(id, request);
                 if (project == null)
                     return NotFound($"Project with ID {id} not found");
 
@@ -121,9 +114,9 @@ namespace GP.ADQ.DeploymentTracker.API
         /// Delete a project
         /// </summary>
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteProject(int id)
+        public async Task<IActionResult> DeleteProject(int id)
         {
             try
             {
@@ -131,7 +124,7 @@ namespace GP.ADQ.DeploymentTracker.API
                 if (!success)
                     return NotFound($"Project with ID {id} not found");
 
-                return NoContent();
+                return Ok(new { message = "Project deleted successfully" });
             }
             catch (Exception ex)
             {

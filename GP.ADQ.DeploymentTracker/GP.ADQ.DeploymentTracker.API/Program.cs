@@ -1,5 +1,6 @@
 using GP.ADQ.DeploymentTracker.Application.Interfaces;
 using GP.ADQ.DeploymentTracker.Application.Services;
+using GP.ADQ.DeploymentTracker.Domain.Interfaces;
 using GP.ADQ.DeploymentTracker.Infrastructure.Data;
 using GP.ADQ.DeploymentTracker.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +25,12 @@ builder.Services.AddDbContext<DeploymentTrackerContext>(options =>
 // Repositories
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IComponentRepository, ComponentRepository>();
+builder.Services.AddScoped<IChecklistItemRepository, ChecklistItemRepository>();
 
 // Services
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IComponentService, ComponentService>();
+builder.Services.AddScoped<IChecklistService, ChecklistService>();
 
 // CORS para el frontend React
 builder.Services.AddCors(options =>
