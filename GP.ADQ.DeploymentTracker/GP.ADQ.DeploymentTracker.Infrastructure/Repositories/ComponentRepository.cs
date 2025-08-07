@@ -1,5 +1,6 @@
 ﻿using GP.ADQ.DeploymentTracker.Application.Interfaces;
 using GP.ADQ.DeploymentTracker.Domain.Entities;
+using GP.ADQ.DeploymentTracker.Domain.Interfaces;
 using GP.ADQ.DeploymentTracker.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,26 +15,22 @@ namespace GP.ADQ.DeploymentTracker.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<Component>> GetByProjectIdAsync(int projectId)
+        public async Task<Component?> GetByIdAsync(int id)
+        {
+            return await _context.Components.FindAsync(id);
+        }
+
+        public async Task<Component?> GetByIdWithDetailsAsync(int id)
         {
             return await _context.Components
                 .Include(c => c.Versions)
-                .Include(c => c.ChecklistItems)
-                .Where(c => c.ProjectId == projectId)
-                .OrderBy(c => c.Name)
-                .ToListAsync();
-        }
-
-        public async Task<Component?> GetByIdAsync(int id)
-        {
-            return await _context.Components
+                .Include(c => c.ChecklistItems.OrderBy(ci => ci.Order))
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<Component?> GetByIdWithVersionsAsync(int id)
+        public async Task<Component?> GetByIdWithChecklistAsync(int id)
         {
             return await _context.Components
-                .Include(c => c.Versions)
                 .Include(c => c.ChecklistItems)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
@@ -49,17 +46,22 @@ namespace GP.ADQ.DeploymentTracker.Infrastructure.Repositories
         {
             _context.Components.Update(component);
             await _context.SaveChangesAsync();
-            return component;
+            return await GetByIdWithDetailsAsync(component.Id) ?? component;
         }
 
         public async Task DeleteAsync(int id)
         {
-            var component = await _context.Components.FindAsync(id);
+            var component = await GetByIdAsync(id);
             if (component != null)
             {
                 _context.Components.Remove(component);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Components.AnyAsync(c => c.Id == id);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace GP.ADQ.DeploymentTracker.Infrastructure.Repositories
         {
             _context.Projects.Update(project);
             await _context.SaveChangesAsync();
-            return project;
+            return await GetByIdWithComponentsAsync(project.Id);
         }
 
         public async Task DeleteAsync(int id)

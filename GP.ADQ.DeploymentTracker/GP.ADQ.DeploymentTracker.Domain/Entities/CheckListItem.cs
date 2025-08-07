@@ -20,14 +20,14 @@
             CreatedAt = DateTime.UtcNow;
         }
 
-        public void Complete(string? notes = null)
+        public void MarkAsComplete(string? notes = null)
         {
             IsCompleted = true;
             Notes = notes;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void Uncomplete()
+        public void MarkAsIncomplete()
         {
             IsCompleted = false;
             UpdatedAt = DateTime.UtcNow;
