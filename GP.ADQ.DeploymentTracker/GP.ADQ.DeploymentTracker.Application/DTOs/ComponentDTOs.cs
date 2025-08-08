@@ -1,4 +1,6 @@
-﻿namespace GP.ADQ.DeploymentTracker.Application.DTOs
+﻿using GP.ADQ.DeploymentTracker.Domain.Enums;
+
+namespace GP.ADQ.DeploymentTracker.Application.DTOs
 {
     public class CreateComponentDto
     {
@@ -35,5 +37,20 @@
     public class ToggleChecklistItemDto
     {
         public bool Completed { get; set; }
+    }
+
+    public class UpdateVersionDto
+    {
+        public string Environment { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? DeployedBy { get; set; }
+    }
+
+    public class DeployComponentDto
+    {
+        public string Environment { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
+        public string DeployedBy { get; set; } = string.Empty;
     }
 }

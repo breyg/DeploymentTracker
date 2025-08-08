@@ -29,7 +29,10 @@ namespace GP.ADQ.DeploymentTracker.Application.Services
 
             var component = new Component()
             {
-                JiraTicket = request.JiraTicket
+                Name = request.Name,
+                Type = request.Type,
+                JiraTicket = request.JiraTicket,
+                ProjectId = projectId,
             };
 
             if (request.MemoryAllocation.HasValue)
@@ -49,7 +52,7 @@ namespace GP.ADQ.DeploymentTracker.Application.Services
 
             component.UpdateInfo(
                 request.Name,
-                Enum.Parse<ComponentType>(request.Type),
+                request.Type,
                 request.JiraTicket
             );
 
@@ -122,6 +125,50 @@ namespace GP.ADQ.DeploymentTracker.Application.Services
                     Notes = ci.Notes
                 }).ToList()
             };
+        }
+
+        public async Task<bool> UpdateComponentVersionAsync(int componentId, UpdateVersionDto request)
+        {
+            var component = await _componentRepository.GetByIdWithDetailsAsync(componentId);
+            if (component == null) return false;
+
+            var environment = Enum.Parse<EnvironmentType>(request.Environment, true);
+            var status = Enum.Parse<DeploymentStatus>(request.Status, true);
+
+            component.SetVersion(environment, request.Version, status);
+
+            // Si se marca como deployed, actualizar datos de despliegue
+            if (status == DeploymentStatus.Deployed)
+            {
+                var version = component.Versions.FirstOrDefault(v => v.Environment == environment);
+                if (version != null)
+                {
+                    version.Deploy(request.DeployedBy ?? "system");
+                }
+            }
+
+            await _componentRepository.UpdateAsync(component);
+            return true;
+        }
+
+        public async Task<bool> DeployComponentAsync(int componentId, DeployComponentDto request)
+        {
+            var component = await _componentRepository.GetByIdWithDetailsAsync(componentId);
+            if (component == null) return false;
+
+            var environment = Enum.Parse<EnvironmentType>(request.Environment, true);
+
+            // Marcar como desplegado
+            component.SetVersion(environment, request.Version, DeploymentStatus.Deployed);
+
+            var version = component.Versions.FirstOrDefault(v => v.Environment == environment);
+            if (version != null)
+            {
+                version.Deploy(request.DeployedBy);
+            }
+
+            await _componentRepository.UpdateAsync(component);
+            return true;
         }
     }
 }

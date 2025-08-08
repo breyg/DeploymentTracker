@@ -5,7 +5,7 @@ namespace GP.ADQ.DeploymentTracker.Domain.Entities
     public class Component : BaseEntity
     {
         public string Name { get; set; } = string.Empty;
-        public ComponentType Type { get; set; }
+        public string Type { get; set; }
         public int ProjectId { get; set; }
         public string? JiraTicket { get; set; }
         public string? MemoryAllocation { get; set; }
@@ -16,7 +16,7 @@ namespace GP.ADQ.DeploymentTracker.Domain.Entities
 
         public Component() { }
 
-        public Component(string name, ComponentType type, int projectId, string? jiraTicket = null)
+        public Component(string name, string type, int projectId, string? jiraTicket = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Component name cannot be empty", nameof(name));
@@ -66,7 +66,7 @@ namespace GP.ADQ.DeploymentTracker.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void UpdateInfo(string name, ComponentType type, string? jiraTicket)
+        public void UpdateInfo(string name, string type, string? jiraTicket)
         {
             Name = name;
             Type = type;

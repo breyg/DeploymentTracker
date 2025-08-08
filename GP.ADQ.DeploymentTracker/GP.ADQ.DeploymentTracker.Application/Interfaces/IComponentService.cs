@@ -9,5 +9,7 @@ namespace GP.ADQ.DeploymentTracker.Application.Interfaces
         Task<ComponentDto?> UpdateComponentAsync(int id, UpdateComponentDto request);
         Task<bool> DeleteComponentAsync(int id);
         Task<bool> UpdateComponentChecklistAsync(int componentId, UpdateChecklistDto request);
+        Task<bool> UpdateComponentVersionAsync(int componentId, UpdateVersionDto request);
+        Task<bool> DeployComponentAsync(int componentId, DeployComponentDto request);
     }
 }
