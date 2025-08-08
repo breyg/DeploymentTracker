@@ -23,13 +23,13 @@ namespace GP.ADQ.DeploymentTracker.Infrastructure.Data
             await context.SaveChangesAsync();
 
             // Add components to payment project
-            var paymentLambda = new Component("payment-processor-lambda", ComponentType.Lambda, paymentProject.Id, "PAY-123");
+            var paymentLambda = new Component("payment-processor-lambda", "Lambda", paymentProject.Id, "PAY-123");
             paymentLambda.UpdateConfiguration("512MB", "30s", "PAY-123");
 
-            var paymentECS = new Component("payment-api-ecs", ComponentType.ECS, paymentProject.Id, "PAY-124");
+            var paymentECS = new Component("payment-api-ecs", "ECS", paymentProject.Id, "PAY-124");
 
             // Add components to notification project
-            var notificationLambda = new Component("notification-sender-lambda", ComponentType.Lambda, notificationProject.Id, "NOT-456");
+            var notificationLambda = new Component("notification-sender-lambda", "Lambda", notificationProject.Id, "NOT-456");
             notificationLambda.UpdateConfiguration("256MB", "60s", "NOT-456");
 
             context.Components.AddRange(paymentLambda, paymentECS, notificationLambda);

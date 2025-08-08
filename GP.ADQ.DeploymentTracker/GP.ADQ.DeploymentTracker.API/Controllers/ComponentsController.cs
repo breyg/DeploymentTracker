@@ -136,5 +136,51 @@ namespace GP.ADQ.DeploymentTracker.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        /// <summary>
+        /// Update version for a specific environment
+        /// </summary>
+        [HttpPut("{componentId}/versions")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateComponentVersion(int componentId, [FromBody] UpdateVersionDto request)
+        {
+            try
+            {
+                var success = await _componentService.UpdateComponentVersionAsync(componentId, request);
+                if (!success)
+                    return NotFound($"Component with ID {componentId} not found");
+
+                return Ok(new { message = "Version updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating version for component {ComponentId}", componentId);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Quick deploy to environment
+        /// </summary>
+        [HttpPost("{componentId}/deploy")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeployComponent(int componentId, [FromBody] DeployComponentDto request)
+        {
+            try
+            {
+                var success = await _componentService.DeployComponentAsync(componentId, request);
+                if (!success)
+                    return NotFound($"Component with ID {componentId} not found");
+
+                return Ok(new { message = "Component deployed successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deploying component {ComponentId}", componentId);
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
